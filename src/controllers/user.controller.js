@@ -398,6 +398,14 @@ const getAllUsers = AsynHandler(async (req, res) => {
 //     .status(200)
 //     .json(new ApiResponse(200, users, "User is successfully fetched "));
 // });
+const deleteUser = asyncHandler(async (req, res) => {
+  const lead = await User.findByIdAndDelete(req.params.userId);
+  if (!lead) {
+    return errorResponse(res, 404, "User not found");
+  }
+  successResponse(res, 204, null);
+});
+
 export {
   registerUser,
   UpdateAccountDetail,
@@ -410,4 +418,5 @@ export {
   ChangePassword,
   GetCurrentUser,
   UpdatedAvatar,
+  deleteUser,
 };
