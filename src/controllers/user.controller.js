@@ -9,6 +9,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
 import { asyncHandler } from "../utils/asyncHandler.js";
+import { successResponse } from "../utils/response.js";
 
 const generateAccesTokenAndRefereshToken = async (useId) => {
   try {
@@ -369,6 +370,29 @@ const updateUser = AsynHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, updatedUser, "User updated successfully"));
 });
+// const getAllUsers = AsynHandler(async (req, res) => {
+//   let { page = 1, limit = 10 } = req.query;
+//   page = parseInt(page);
+//   limit = parseInt(limit);
+
+//   const skip = (page - 1) * limit;
+
+//   const users = await User.find().skip(skip).limit(limit);
+//   const totalUsers = await User.countDocuments();
+
+//   return res.status(200).json(
+//     new ApiResponse(
+//       200,
+//       {
+//         users,
+//         totalUsers,
+//         totalPages: Math.ceil(totalUsers / limit),
+//         currentPage: page,
+//       },
+//       "Users successfully fetched"
+//     )
+//   );
+// });
 const getAllUsers = AsynHandler(async (req, res) => {
   let { page = 1, limit = 10 } = req.query;
   page = parseInt(page);
@@ -376,8 +400,12 @@ const getAllUsers = AsynHandler(async (req, res) => {
 
   const skip = (page - 1) * limit;
 
-  const users = await User.find().skip(skip).limit(limit);
-  const totalUsers = await User.countDocuments();
+  // Exclude users with role "admin"
+  const users = await User.find({ role: { $ne: "admin" } })
+    .skip(skip)
+    .limit(limit);
+
+  const totalUsers = await User.countDocuments({ role: { $ne: "admin" } });
 
   return res.status(200).json(
     new ApiResponse(
@@ -401,7 +429,8 @@ const getAllUsers = AsynHandler(async (req, res) => {
 // });
 const deleteUser = asyncHandler(async (req, res) => {
   const lead = await User.findByIdAndDelete(req.params.userId);
-  if (!lead) {
+
+  if (!req.params.userId) {
     return errorResponse(res, 404, "User not found");
   }
   successResponse(res, 204, null);
