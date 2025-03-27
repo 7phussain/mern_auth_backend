@@ -15,5 +15,9 @@ app.use(cookieParser());
 import userRoutes from "./routes/user.routes.js";
 app.use("/api", leadRoutes);
 app.use("/api/v1/user/", userRoutes);
+
+app.get("/", (req, res) => {
+  res.json({ message: "Hello from server" });
+});
 export { app };
 /// for testing
