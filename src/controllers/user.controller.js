@@ -8,6 +8,7 @@ import { errorResponse } from "../utils/response.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import mongoose from "mongoose";
+import { asyncHandler } from "../utils/asyncHandler.js";
 
 const generateAccesTokenAndRefereshToken = async (useId) => {
   try {
